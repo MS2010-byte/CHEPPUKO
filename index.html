@@ -1,0 +1,2750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6C63FF">
+<title>CHEPPUKO — Someone is listening.</title>
+
+<link rel="manifest" href="./manifest.json">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Inter,Arial,sans-serif
+}
+
+body{
+  background:#faf9ff;
+  color:#171421;
+  line-height:1.6
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  padding:18px 7%;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 2px 15px rgba(0,0,0,.05)
+}
+
+.logo{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-1px;
+  white-space:nowrap
+}
+
+.logo span{
+  color:#ff4f81
+}
+
+nav{
+  display:flex;
+  gap:25px
+}
+
+nav a{
+  text-decoration:none;
+  color:#444;
+  font-weight:600
+}
+
+.header-actions,
+#authArea,
+#userArea{
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.btn{
+  border:none;
+  padding:13px 22px;
+  border-radius:30px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:15px
+}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed
+}
+
+.primary{
+  background:#171421;
+  color:#fff
+}
+
+.pink{
+  background:#ff4f81;
+  color:#fff
+}
+
+.hero{
+  min-height:650px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:70px 7%;
+  gap:50px
+}
+
+.hero-text{
+  max-width:650px
+}
+
+.badge{
+  display:inline-block;
+  background:#ffe7ef;
+  color:#d82f62;
+  padding:8px 15px;
+  border-radius:20px;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:20px
+}
+
+h1{
+  font-size:clamp(42px,6vw,72px);
+  line-height:1.05;
+  letter-spacing:-3px;
+  margin-bottom:25px
+}
+
+h1 span{
+  color:#ff4f81
+}
+
+.hero p{
+  font-size:19px;
+  color:#686472;
+  max-width:570px;
+  margin-bottom:30px
+}
+
+.buttons{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap
+}
+
+.hero-card{
+  width:390px;
+  min-height:430px;
+  background:#fff;
+  border-radius:35px;
+  padding:30px;
+  box-shadow:0 25px 70px rgba(40,20,70,.12)
+}
+
+.avatar{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#ffe7ef;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  margin-bottom:20px
+}
+
+.message{
+  padding:15px 18px;
+  border-radius:20px;
+  margin:12px 0;
+  max-width:85%
+}
+
+.user{
+  background:#171421;
+  color:#fff;
+  margin-left:auto;
+  border-bottom-right-radius:5px
+}
+
+.ai{
+  background:#f1eff6;
+  border-bottom-left-radius:5px
+}
+
+section{
+  padding:90px 7%
+}
+
+.section-title{
+  text-align:center;
+  max-width:650px;
+  margin:auto auto 50px
+}
+
+.section-title h2{
+  font-size:42px;
+  margin-bottom:12px
+}
+
+.section-title p{
+  color:#777
+}
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px
+}
+
+.feature{
+  background:#fff;
+  padding:30px;
+  border-radius:25px;
+  box-shadow:0 10px 35px rgba(0,0,0,.05)
+}
+
+.feature-icon{
+  font-size:32px;
+  margin-bottom:15px
+}
+
+.feature h3{
+  margin-bottom:8px
+}
+
+.feature p{
+  color:#777;
+  font-size:15px
+}
+
+.listener-register-btn{
+  margin-top:18px;
+  width:100%
+}
+
+.pricing{
+  background:#171421;
+  color:#fff
+}
+
+.pricing .section-title p{
+  color:#aaa
+}
+
+.plans{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1000px;
+  margin:auto
+}
+
+.plan{
+  background:#24212d;
+  padding:32px;
+  border-radius:28px;
+  border:1px solid #383441
+}
+
+.plan.highlight{
+  background:#ff4f81;
+  transform:translateY(-10px)
+}
+
+.plan h3{
+  font-size:23px
+}
+
+.price{
+  font-size:40px;
+  font-weight:800;
+  margin:15px 0
+}
+
+.plan ul{
+  list-style:none;
+  margin:25px 0
+}
+
+.plan li{
+  margin:12px 0
+}
+
+.plan li::before{
+  content:"✓ ";
+  font-weight:bold
+}
+
+.plan .btn{
+  width:100%;
+  background:#fff;
+  color:#171421
+}
+
+.safety{
+  background:#fff1f5;
+  text-align:center
+}
+
+.safety-box{
+  max-width:800px;
+  margin:auto;
+  background:#fff;
+  padding:35px;
+  border-radius:25px
+}
+
+footer{
+  background:#111016;
+  color:#aaa;
+  padding:40px 7%;
+  text-align:center
+}
+
+footer strong{
+  color:#fff
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+
+.chat,
+.auth-box{
+  background:#fff;
+  width:500px;
+  max-width:100%;
+  border-radius:25px;
+  overflow:hidden
+}
+
+.chat-head{
+  padding:20px;
+  background:#171421;
+  color:#fff;
+  display:flex;
+  justify-content:space-between
+}
+
+.chat-body{
+  height:350px;
+  padding:20px;
+  overflow-y:auto
+}
+
+.chat-input{
+  display:flex;
+  padding:15px;
+  border-top:1px solid #ddd;
+  gap:10px
+}
+
+.chat-input input{
+  flex:1;
+  padding:13px 15px;
+  border:1px solid #ddd;
+  border-radius:25px;
+  outline:none
+}
+
+.close{
+  cursor:pointer;
+  font-size:22px
+}
+
+.auth-box{
+  padding:30px
+}
+
+.auth-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px
+}
+
+.auth-header h2{
+  font-size:27px
+}
+
+.auth-group{
+  margin-bottom:16px
+}
+
+.auth-group label{
+  display:block;
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:7px
+}
+
+.auth-group input{
+  width:100%;
+  padding:13px 15px;
+  border:1px solid #ddd;
+  border-radius:14px;
+  outline:none;
+  font-size:15px
+}
+
+.auth-group input:focus{
+  border-color:#ff4f81
+}
+
+.auth-submit{
+  width:100%;
+  margin-top:5px
+}
+
+.auth-switch{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+  color:#777
+}
+
+.auth-switch button{
+  border:none;
+  background:none;
+  color:#ff4f81;
+  font-weight:700;
+  cursor:pointer
+}
+
+.auth-message{
+  display:none;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:15px;
+  font-size:14px;
+  font-weight:600
+}
+
+.listener-box{
+  background:#fff;
+  width:550px;
+  max-width:100%;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:28px;
+  padding:30px;
+  box-shadow:0 25px 80px rgba(0,0,0,.25)
+}
+
+.listener-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px
+}
+
+.listener-header h2{
+  font-size:28px
+}
+
+.listener-subtitle{
+  color:#777;
+  font-size:14px;
+  margin-bottom:25px
+}
+
+.listener-group{
+  margin-bottom:17px
+}
+
+.listener-group label{
+  display:block;
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:7px
+}
+
+.listener-group input,
+.listener-group select,
+.listener-group textarea{
+  width:100%;
+  padding:13px 15px;
+  border:1px solid #ddd;
+  border-radius:14px;
+  outline:none;
+  font-size:15px;
+  background:#fff
+}
+
+.listener-group textarea{
+  min-height:90px;
+  resize:vertical
+}
+
+.listener-consent{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:18px 0;
+  font-size:13px;
+  color:#666
+}
+
+.listener-consent input{
+  margin-top:5px
+}
+
+.listener-submit{
+  width:100%;
+  margin-top:5px
+}
+
+.listener-status{
+  display:none;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:18px;
+  font-size:14px;
+  font-weight:600
+}
+
+.status-pending{
+  background:#fff7df;
+  color:#8a6500
+}
+
+.status-approved{
+  background:#e9fff0;
+  color:#16723b
+}
+
+.status-rejected{
+  background:#ffecef;
+  color:#b4233d
+}
+
+.listener-note{
+  background:#f7f5fb;
+  padding:13px;
+  border-radius:14px;
+  font-size:13px;
+  color:#666;
+  margin-top:15px
+}
+
+.payment-box{
+  background:#fff;
+  width:450px;
+  max-width:100%;
+  border-radius:28px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 25px 80px rgba(0,0,0,.25)
+}
+
+.payment-box h2{
+  margin-bottom:10px
+}
+
+.payment-box p{
+  color:#777;
+  margin-bottom:20px
+}
+
+.payment-plan{
+  background:#f7f5fb;
+  border-radius:18px;
+  padding:18px;
+  margin:15px 0
+}
+
+.payment-plan strong{
+  font-size:30px;
+  display:block
+}
+
+.payment-loader{
+  display:none;
+  margin-top:15px;
+  color:#777;
+  font-size:14px
+}
+
+@media(max-width:1050px){
+  nav{
+    display:none
+  }
+
+  .features{
+    grid-template-columns:repeat(2,1fr)
+  }
+}
+
+@media(max-width:900px){
+  .hero{
+    flex-direction:column;
+    text-align:center
+  }
+
+  .hero p{
+    margin-left:auto;
+    margin-right:auto
+  }
+
+  .buttons{
+    justify-content:center
+  }
+
+  .plans{
+    grid-template-columns:1fr
+  }
+
+  .plan.highlight{
+    transform:none
+  }
+}
+
+@media(max-width:600px){
+  header{
+    padding:14px 5%;
+    gap:8px
+  }
+
+  .logo{
+    font-size:20px
+  }
+
+  .header-actions>.btn,
+  #authArea .btn,
+  #userArea .btn{
+    padding:10px 12px;
+    font-size:12px
+  }
+
+  .features{
+    grid-template-columns:1fr
+  }
+
+  section{
+    padding:65px 5%
+  }
+
+  .hero{
+    padding:55px 5%
+  }
+
+  .hero-card{
+    width:100%
+  }
+
+  #userEmail{
+    display:none
+  }
+
+  .listener-box,
+  .auth-box,
+  .payment-box{
+    padding:22px
+  }
+
+  .listener-header h2{
+    font-size:23px
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+CHEPPUKO <span>♥</span>
+</div>
+
+<nav>
+<a href="#features">Features</a>
+<a href="#pricing">Premium</a>
+<a href="#safety">Safety</a>
+</nav>
+
+<div class="header-actions">
+
+<div id="authArea">
+<button class="btn primary" onclick="openAuthModal('login')">Login</button>
+<button class="btn pink" onclick="openAuthModal('signup')">Sign Up</button>
+</div>
+
+<div id="userArea" style="display:none">
+<span id="userEmail"></span>
+<button class="btn primary" onclick="logoutUser()">Logout</button>
+</div>
+
+<button class="btn primary" onclick="openChat()">Start Talking</button>
+
+</div>
+</header>
+
+
+<main>
+
+<section class="hero">
+
+<div class="hero-text">
+
+<div class="badge">
+♥ A safe place to be heard
+</div>
+
+<h1>
+Evaraina vinthe<br>
+<span>baaguntundi.</span>
+</h1>
+
+<p>
+Nuvvu cheppu. Memu vintam. Loneliness, relationship problems,
+career tension, life lo confusion... judgement lekunda matladandi.
+</p>
+
+<div class="buttons">
+
+<button class="btn pink" onclick="openChat()">
+💬 Start Talking — Free
+</button>
+
+<button class="btn primary"
+onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">
+Explore Premium
+</button>
+
+</div>
+</div>
+
+
+<div class="hero-card">
+
+<div class="avatar">♥</div>
+
+<h3>Someone is listening.</h3>
+
+<div class="message user">
+Naaku evaritho matladalo teliyatledu...
+</div>
+
+<div class="message ai">
+It's okay. Nuvvu ikkada freely cheppachu.
+Nenu vintanu. No judgement. ❤️
+</div>
+
+<div class="message user">
+Nenu chala lonely ga feel avuthunna.
+</div>
+
+<div class="message ai">
+Nuvvu alone kaadu. Start cheyyi...
+em jarigindi?
+</div>
+
+</div>
+
+</section>
+
+
+<section id="features">
+
+<div class="section-title">
+
+<h2>Just talk. Be heard.</h2>
+
+<p>
+Cheppuko is designed around one simple idea —
+sometimes people don't need advice, they need someone to listen.
+</p>
+
+</div>
+
+
+<div class="features">
+
+<div class="feature">
+<div class="feature-icon">🔒</div>
+<h3>Anonymous</h3>
+<p>
+Your identity doesn't have to be revealed.
+Share what you feel comfortably.
+</p>
+</div>
+
+
+<div class="feature">
+<div class="feature-icon">🤖</div>
+<h3>AI Listener</h3>
+<p>
+Talk anytime, 24/7.
+A supportive AI listener is always available.
+</p>
+</div>
+
+
+<div class="feature">
+<div class="feature-icon">📔</div>
+<h3>Feelings Journal</h3>
+<p>
+Write down your thoughts and feelings privately
+and track your emotional journey.
+</p>
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">🧑‍🤝‍🧑</div>
+
+<h3>Human Listener</h3>
+
+<p>
+Connect with trained peer listeners when you simply
+want a real person to hear you.
+</p>
+
+<button
+class="btn pink listener-register-btn"
+onclick="openListenerRegistration()">
+🧑‍🤝‍🧑 Become a Listener
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="pricing" class="pricing">
+
+<div class="section-title">
+
+<h2>Choose your space.</h2>
+
+<p>
+Start free. Upgrade whenever you want.
+</p>
+
+</div>
+
+
+<div class="plans">
+
+
+<div class="plan">
+
+<h3>Free</h3>
+
+<div class="price">
+₹0
+</div>
+
+<ul>
+<li>Anonymous sharing</li>
+<li>Basic AI listener</li>
+<li>Basic journal</li>
+<li>Safety resources</li>
+</ul>
+
+<button class="btn" onclick="openChat()">
+Start Free
+</button>
+
+</div>
+
+
+<div class="plan highlight">
+
+<h3>Plus</h3>
+
+<div class="price">
+₹49<span style="font-size:15px">/month</span>
+</div>
+
+<ul>
+<li>More AI conversations</li>
+<li>Advanced journal</li>
+<li>Daily check-ins</li>
+<li>Ad-free experience</li>
+</ul>
+
+<button class="btn" onclick="startPremiumPayment('plus')">
+Get Plus ₹49
+</button>
+
+</div>
+
+
+<div class="plan">
+
+<h3>Premium</h3>
+
+<div class="price">
+₹149<span style="font-size:15px">/month</span>
+</div>
+
+<ul>
+<li>Everything in Plus</li>
+<li>Human listener matching</li>
+<li>Text listener sessions</li>
+<li>Priority support</li>
+</ul>
+
+<button class="btn" onclick="startPremiumPayment('premium')">
+Get Premium ₹149
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="safety" class="safety">
+
+<div class="section-title">
+
+<h2>Your safety matters.</h2>
+
+<p>
+CHEPPUKO is a listening platform, not a replacement for
+professional emergency or medical care.
+</p>
+
+</div>
+
+<div class="safety-box">
+
+<p>
+If you are in immediate danger or think you may hurt yourself,
+please contact your local emergency service or a trusted person
+near you immediately.
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+<p>
+<strong>CHEPPUKO</strong> — Someone is listening. ❤️
+</p>
+
+<p>
+© 2026 CHEPPUKO. All rights reserved.
+</p>
+
+</footer>
+
+
+<!-- AUTH MODAL -->
+
+<div class="modal" id="authModal">
+
+<div class="auth-box">
+
+<div class="auth-header">
+
+<h2 id="authTitle">
+Login to CHEPPUKO
+</h2>
+
+<span class="close" onclick="closeAuthModal()">×</span>
+
+</div>
+
+<div id="authMessage" class="auth-message"></div>
+
+<form id="authForm" onsubmit="handleAuth(event)">
+
+<div class="auth-group" id="authNameGroup" style="display:none">
+
+<label>
+Full Name
+</label>
+
+<input
+id="authName"
+type="text"
+placeholder="Your name">
+
+</div>
+
+
+<div class="auth-group">
+
+<label>
+Email
+</label>
+
+<input
+id="authEmail"
+type="email"
+placeholder="you@example.com"
+required>
+
+</div>
+
+
+<div class="auth-group">
+
+<label>
+Password
+</label>
+
+<input
+id="authPassword"
+type="password"
+placeholder="Minimum 6 characters"
+minlength="6"
+required>
+
+</div>
+
+
+<button
+id="authSubmit"
+type="submit"
+class="btn pink auth-submit">
+Login
+</button>
+
+</form>
+
+
+<div class="auth-switch">
+
+<span id="authSwitchText">
+Don't have an account?
+</span>
+
+<button id="authSwitchBtn" onclick="switchAuthMode()">
+Sign Up
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CHAT MODAL -->
+
+<div class="modal" id="chatModal">
+
+<div class="chat">
+
+<div class="chat-head">
+
+<strong>CHEPPUKO AI Listener ❤️</strong>
+
+<span class="close" onclick="closeChat()">×</span>
+
+</div>
+
+
+<div class="chat-body" id="chatBody">
+
+<div class="message ai">
+Hi ❤️ Nenu vintunna.
+Emaina share cheyyali anipisthe freely cheppu.
+</div>
+
+</div>
+
+
+<div class="chat-input">
+
+<input
+id="messageInput"
+type="text"
+placeholder="Type what you're feeling..."
+onkeydown="if(event.key==='Enter')sendMessage()">
+
+<button
+class="btn pink"
+onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- LISTENER REGISTRATION -->
+
+<div class="modal" id="listenerModal">
+
+<div class="listener-box">
+
+<div class="listener-header">
+
+<h2>Become a Listener</h2>
+
+<span class="close" onclick="closeListenerRegistration()">×</span>
+
+</div>
+
+<p class="listener-subtitle">
+Help someone feel heard. Applications are reviewed before approval.
+</p>
+
+<div id="listenerStatus" class="listener-status"></div>
+
+
+<form id="listenerForm" onsubmit="submitListenerApplication(event)">
+
+<div class="listener-group">
+
+<label>
+Name *
+</label>
+
+<input
+id="listenerName"
+type="text"
+placeholder="Your full name"
+required>
+
+</div>
+
+
+<div class="listener-group">
+
+<label>
+Age *
+</label>
+
+<input
+id="listenerAge"
+type="number"
+min="18"
+placeholder="18+"
+required>
+
+</div>
+
+
+<div class="listener-group">
+
+<label>
+Languages *
+</label>
+
+<input
+id="listenerLanguages"
+type="text"
+placeholder="Telugu, Hindi, English"
+required>
+
+</div>
+
+
+<div class="listener-group">
+
+<label>
+Availability *
+</label>
+
+<select id="listenerAvailability" required>
+
+<option value="">
+Select availability
+</option>
+
+<option value="1–3 hours/week">
+1–3 hours/week
+</option>
+
+<option value="3–5 hours/week">
+3–5 hours/week
+</option>
+
+<option value="5–10 hours/week">
+5–10 hours/week
+</option>
+
+<option value="10+ hours/week">
+10+ hours/week
+</option>
+
+</select>
+
+</div>
+
+
+<div class="listener-group">
+
+<label>
+Previous Listening / Support Experience
+<span style="font-weight:400;color:#888">
+(Optional)
+</span>
+</label>
+
+<textarea
+id="listenerExperience"
+placeholder="Tell us briefly about your experience...">
+</textarea>
+
+</div>
+
+
+<div class="listener-group">
+
+<label>
+Why do you want to become a listener? *
+</label>
+
+<textarea
+id="listenerReason"
+placeholder="Tell us why you want to help people..."
+required>
+</textarea>
+
+</div>
+
+
+<label class="listener-consent">
+
+<input
+type="checkbox"
+id="listenerConsent"
+required>
+
+<span>
+I understand that I am applying to become a peer listener.
+I agree to listen respectfully, avoid judgement, protect user privacy,
+and follow CHEPPUKO safety guidelines.
+</span>
+
+</label>
+
+
+<button
+id="listenerSubmitBtn"
+type="submit"
+class="btn pink listener-submit">
+Submit Listener Application
+</button>
+
+
+<div class="listener-note">
+🔐 Your application will be reviewed before you can interact
+with users as a Human Listener.
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- PAYMENT MODAL -->
+
+<div class="modal" id="paymentModal">
+
+<div class="payment-box">
+
+<div class="auth-header">
+
+<h2>CHEPPUKO Premium 🚀</h2>
+
+<span class="close" onclick="closePaymentModal()">×</span>
+
+</div>
+
+<p>
+Secure monthly subscription powered by Razorpay.
+</p>
+
+<div class="payment-plan">
+
+<div id="paymentPlanName">
+CHEPPUKO Plus
+</div>
+
+<strong id="paymentPlanAmount">
+₹49
+</strong>
+
+<div>
+per month
+</div>
+
+</div>
+
+<button
+id="paymentContinueBtn"
+class="btn pink"
+style="width:100%"
+onclick="continuePayment()">
+Continue to Payment
+</button>
+
+<div
+id="paymentLoader"
+class="payment-loader">
+Preparing secure payment...
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+"https://bxwphbduebesollgenyy.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_aN0hbGLJIN5Qu4Tt8AKCqw_xsbrh03D";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* =========================================================
+   RAZORPAY
+   IMPORTANT:
+   ONLY PUT YOUR TEST KEY ID HERE.
+   NEVER PUT KEY SECRET HERE.
+========================================================= */
+
+const RAZORPAY_KEY_ID =
+"PASTE_YOUR_RAZORPAY_TEST_KEY_ID_HERE";
+
+
+/* =========================================================
+   PLAN DETAILS
+========================================================= */
+
+const PREMIUM_PLANS = {
+
+  plus:{
+    name:"CHEPPUKO Plus",
+    amount:"₹49",
+    description:"CHEPPUKO Plus — ₹49/month"
+  },
+
+  premium:{
+    name:"CHEPPUKO Premium",
+    amount:"₹149",
+    description:"CHEPPUKO Premium — ₹149/month"
+  }
+
+};
+
+
+let selectedPremiumPlan = null;
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+let authMode="login";
+
+
+function openAuthModal(mode="login"){
+
+  authMode=mode;
+
+  document
+    .getElementById("authForm")
+    .reset();
+
+  resetAuthMessage();
+
+  updateAuthUI();
+
+  document
+    .getElementById("authModal")
+    .style
+    .display="flex";
+
+  setTimeout(()=>{
+
+    document
+      .getElementById(
+        authMode==="login"
+        ?"authEmail"
+        :"authName"
+      )
+      .focus();
+
+  },100);
+}
+
+
+function closeAuthModal(){
+
+  document
+    .getElementById("authModal")
+    .style
+    .display="none";
+
+  resetAuthMessage();
+}
+
+
+function resetAuthMessage(){
+
+  const m=
+    document.getElementById("authMessage");
+
+  m.style.display="none";
+  m.textContent="";
+}
+
+
+function switchAuthMode(){
+
+  authMode=
+    authMode==="login"
+    ?"signup"
+    :"login";
+
+  document
+    .getElementById("authForm")
+    .reset();
+
+  resetAuthMessage();
+
+  updateAuthUI();
+}
+
+
+function updateAuthUI(){
+
+  const signup=
+    authMode==="signup";
+
+  document
+    .getElementById("authTitle")
+    .textContent=
+      signup
+      ?"Create CHEPPUKO Account"
+      :"Login to CHEPPUKO";
+
+  document
+    .getElementById("authNameGroup")
+    .style.display=
+      signup
+      ?"block"
+      :"none";
+
+  document
+    .getElementById("authName")
+    .required=signup;
+
+  document
+    .getElementById("authSubmit")
+    .textContent=
+      signup
+      ?"Create Account"
+      :"Login";
+
+  document
+    .getElementById("authSwitchText")
+    .textContent=
+      signup
+      ?"Already have an account?"
+      :"Don't have an account?";
+
+  document
+    .getElementById("authSwitchBtn")
+    .textContent=
+      signup
+      ?"Login"
+      :"Sign Up";
+}
+
+
+function showAuthMessage(text,type){
+
+  const m=
+    document.getElementById("authMessage");
+
+  m.style.display="block";
+
+  m.textContent=text;
+
+  m.style.background=
+    type==="success"
+    ?" #e9fff0"
+    :"#ffecef";
+
+  m.style.color=
+    type==="success"
+    ?" #16723b"
+    :"#b4233d";
+}
+
+
+async function handleAuth(e){
+
+  e.preventDefault();
+
+  const email=
+    document
+      .getElementById("authEmail")
+      .value
+      .trim();
+
+  const password=
+    document
+      .getElementById("authPassword")
+      .value;
+
+  const name=
+    document
+      .getElementById("authName")
+      .value
+      .trim();
+
+  const btn=
+    document.getElementById("authSubmit");
+
+  btn.disabled=true;
+  btn.textContent="Please wait...";
+
+  resetAuthMessage();
+
+  try{
+
+    if(authMode==="signup"){
+
+      const {data,error}=
+        await supabaseClient.auth.signUp({
+
+          email,
+          password,
+
+          options:{
+            data:{
+              full_name:name
+            }
+          }
+
+        });
+
+      if(error)
+        throw error;
+
+      if(data.session){
+
+        showAuthMessage(
+          "Account created successfully! ❤️",
+          "success"
+        );
+
+        setTimeout(
+          closeAuthModal,
+          900
+        );
+
+      }else{
+
+        showAuthMessage(
+          "Account created! Please check your email and verify your account.",
+          "success"
+        );
+
+      }
+
+    }else{
+
+      const {error}=
+        await supabaseClient.auth
+          .signInWithPassword({
+            email,
+            password
+          });
+
+      if(error)
+        throw error;
+
+      showAuthMessage(
+        "Login successful! ❤️",
+        "success"
+      );
+
+      setTimeout(
+        closeAuthModal,
+        700
+      );
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    showAuthMessage(
+      err.message ||
+      "Something went wrong. Please try again.",
+      "error"
+    );
+
+  }finally{
+
+    btn.disabled=false;
+
+    btn.textContent=
+      authMode==="signup"
+      ?"Create Account"
+      :"Login";
+  }
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutUser(){
+
+  const {error}=
+    await supabaseClient.auth.signOut();
+
+  if(error){
+
+    alert(
+      "Logout failed: "+
+      error.message
+    );
+
+    return;
+  }
+
+  updateUserUI(null);
+
+  alert(
+    "You have been logged out. ❤️"
+  );
+}
+
+
+/* =========================================================
+   USER UI
+========================================================= */
+
+function updateUserUI(user){
+
+  document
+    .getElementById("authArea")
+    .style.display=
+      user
+      ?"none"
+      :"flex";
+
+  document
+    .getElementById("userArea")
+    .style.display=
+      user
+      ?"flex"
+      :"none";
+
+  document
+    .getElementById("userEmail")
+    .textContent=
+      user
+      ?(
+        user.user_metadata?.full_name ||
+        user.email ||
+        "User"
+       )
+      :"";
+
+  if(user){
+
+    setTimeout(
+      checkPremiumStatus,
+      150
+    );
+
+  }
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+async function checkAuthState(){
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+  updateUserUI(
+    session?.user || null
+  );
+
+  supabaseClient.auth
+    .onAuthStateChange(
+      (_event,session)=>{
+        updateUserUI(
+          session?.user || null
+        );
+      }
+    );
+}
+
+checkAuthState();
+
+
+/* =========================================================
+   PREMIUM STATUS
+========================================================= */
+
+async function checkPremiumStatus(){
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+  if(!session)
+    return;
+
+  try{
+
+    const {
+      data,
+      error
+    }=
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "plan,is_premium,premium_until"
+        )
+        .eq("id",session.user.id)
+        .maybeSingle();
+
+    if(error){
+
+      console.error(
+        "Premium status error:",
+        error
+      );
+
+      return;
+    }
+
+    const userEmail=
+      document.getElementById("userEmail");
+
+    if(data?.is_premium){
+
+      userEmail.textContent=
+        (
+          session.user.user_metadata?.full_name ||
+          session.user.email ||
+          "User"
+        )+
+        " • "+
+        String(
+          data.plan || "premium"
+        ).toUpperCase();
+
+    }else{
+
+      userEmail.textContent=
+        session.user.user_metadata?.full_name ||
+        session.user.email ||
+        "User";
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+}
+
+
+/* =========================================================
+   PAYMENT START
+========================================================= */
+
+function startPremiumPayment(plan){
+
+  if(
+    !PREMIUM_PLANS[plan]
+  ){
+
+    alert(
+      "Invalid premium plan."
+    );
+
+    return;
+  }
+
+
+  if(
+    RAZORPAY_KEY_ID.includes("PASTE_")
+  ){
+
+    alert(
+      "Bava ❤️\n\n"+
+      "First RAZORPAY_KEY_ID ni "+
+      "ee HTML lo paste cheyyali.\n\n"+
+      "Razorpay TEST Key ID matrame ikkada pettu."
+    );
+
+    return;
+  }
+
+
+  selectedPremiumPlan=plan;
+
+
+  document
+    .getElementById("paymentPlanName")
+    .textContent=
+      PREMIUM_PLANS[plan].name;
+
+  document
+    .getElementById("paymentPlanAmount")
+    .textContent=
+      PREMIUM_PLANS[plan].amount;
+
+  document
+    .getElementById("paymentModal")
+    .style
+    .display="flex";
+}
+
+
+function closePaymentModal(){
+
+  document
+    .getElementById("paymentModal")
+    .style
+    .display="none";
+
+  document
+    .getElementById("paymentLoader")
+    .style
+    .display="none";
+
+  document
+    .getElementById("paymentContinueBtn")
+    .disabled=false;
+
+  selectedPremiumPlan=null;
+}
+
+
+/* =========================================================
+   CREATE RAZORPAY SUBSCRIPTION
+========================================================= */
+
+async function continuePayment(){
+
+  if(!selectedPremiumPlan){
+
+    alert(
+      "Please select a plan."
+    );
+
+    return;
+  }
+
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+
+  if(!session){
+
+    closePaymentModal();
+
+    alert(
+      "Premium purchase kosam first Login / Sign Up cheyyali. ❤️"
+    );
+
+    openAuthModal("login");
+
+    return;
+  }
+
+
+  const btn=
+    document
+      .getElementById(
+        "paymentContinueBtn"
+      );
+
+  const loader=
+    document
+      .getElementById(
+        "paymentLoader"
+      );
+
+
+  btn.disabled=true;
+
+  loader.style.display="block";
+
+
+  try{
+
+    const {
+      data,
+      error
+    }=
+      await supabaseClient.functions
+        .invoke(
+          "create-subscription",
+          {
+            body:{
+              plan:selectedPremiumPlan
+            }
+          }
+        );
+
+
+    if(error)
+      throw error;
+
+
+    if(
+      !data ||
+      !data.subscription_id
+    ){
+
+      throw new Error(
+        data?.error ||
+        "Subscription create avvaledu."
+      );
+    }
+
+
+    closePaymentModal();
+
+
+    openRazorpayCheckout(
+      data.subscription_id,
+      selectedPremiumPlan,
+      session
+    );
+
+
+  }catch(err){
+
+    console.error(
+      "Subscription error:",
+      err
+    );
+
+    alert(
+      "Payment start avvaledu.\n\n"+
+      (
+        err?.message ||
+        "Please try again."
+      )
+    );
+
+  }finally{
+
+    btn.disabled=false;
+
+    loader.style.display="none";
+  }
+}
+
+
+/* =========================================================
+   RAZORPAY CHECKOUT
+========================================================= */
+
+function openRazorpayCheckout(
+  subscriptionId,
+  plan,
+  session
+){
+
+  const planData=
+    PREMIUM_PLANS[plan];
+
+
+  const options={
+
+    key:
+      RAZORPAY_KEY_ID,
+
+    subscription_id:
+      subscriptionId,
+
+    name:
+      "CHEPPUKO",
+
+    description:
+      planData.description,
+
+    prefill:{
+      email:
+        session.user.email || ""
+    },
+
+    theme:{
+      color:"#ff4f81"
+    },
+
+    modal:{
+
+      ondismiss:function(){
+
+        console.log(
+          "Razorpay checkout closed."
+        );
+
+      }
+
+    },
+
+
+    handler:
+      async function(response){
+
+        await verifyPremiumPayment(
+          response,
+          plan
+        );
+
+      }
+
+  };
+
+
+  const rzp=
+    new Razorpay(options);
+
+
+  rzp.on(
+    "payment.failed",
+    function(response){
+
+      alert(
+        "Payment failed.\n\n"+
+        (
+          response?.error?.description ||
+          "Please try again."
+        )
+      );
+
+    }
+  );
+
+
+  rzp.open();
+}
+
+
+/* =========================================================
+   VERIFY PAYMENT
+========================================================= */
+
+async function verifyPremiumPayment(
+  payment,
+  plan
+){
+
+  try{
+
+    const {
+      data,
+      error
+    }=
+      await supabaseClient.functions
+        .invoke(
+          "verify-payment",
+          {
+            body:{
+
+              razorpay_payment_id:
+                payment.razorpay_payment_id,
+
+              razorpay_subscription_id:
+                payment.razorpay_subscription_id,
+
+              razorpay_signature:
+                payment.razorpay_signature,
+
+              plan:
+                plan
+
+            }
+          }
+        );
+
+
+    if(error)
+      throw error;
+
+
+    if(!data?.success){
+
+      throw new Error(
+        data?.error ||
+        "Payment verification failed."
+      );
+
+    }
+
+
+    alert(
+      "🎉 Premium activated!\n\n"+
+      "CHEPPUKO "+
+      (
+        plan==="plus"
+        ?"Plus"
+        :"Premium"
+      )+
+      " active ayyindi. ❤️"
+    );
+
+
+    await checkPremiumStatus();
+
+
+  }catch(err){
+
+    console.error(
+      "Payment verification error:",
+      err
+    );
+
+
+    alert(
+      "Payment ayyi undochu, kani verification complete kaaledu.\n\n"+
+      "Please refresh and check your account. If it still doesn't show, contact CHEPPUKO support."
+    );
+
+  }
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function openChat(){
+
+  document
+    .getElementById("chatModal")
+    .style
+    .display="flex";
+
+  setTimeout(
+    ()=>{
+      document
+        .getElementById("messageInput")
+        .focus();
+    },
+    100
+  );
+}
+
+
+function closeChat(){
+
+  document
+    .getElementById("chatModal")
+    .style
+    .display="none";
+}
+
+
+function sendMessage(){
+
+  const input=
+    document.getElementById(
+      "messageInput"
+    );
+
+  const body=
+    document.getElementById(
+      "chatBody"
+    );
+
+  const text=
+    input.value.trim();
+
+
+  if(!text)
+    return;
+
+
+  body.innerHTML+=
+    `<div class="message user">
+      ${escapeHTML(text)}
+    </div>`;
+
+
+  input.value="";
+
+  body.scrollTop=
+    body.scrollHeight;
+
+
+  setTimeout(()=>{
+
+    let reply=
+      "Nenu vintunna ❤️. Inka konchem cheppu...";
+
+
+    const x=
+      text.toLowerCase();
+
+
+    if(
+      x.includes("lonely") ||
+      x.includes("alone") ||
+      x.includes("ontari")
+    ){
+
+      reply=
+        "Lonely ga feel avvadam easy kaadu. ❤️ "+
+        "Nuvvu ikkada freely matladachu. "+
+        "Eppati nunchi ila feel avuthunnav?";
+
+    }
+
+    else if(
+      x.includes("love") ||
+      x.includes("relationship") ||
+      x.includes("breakup") ||
+      x.includes("girlfriend") ||
+      x.includes("boyfriend")
+    ){
+
+      reply=
+        "Relationships lo confusion and pain "+
+        "chala heavy ga anipinchachu. ❤️ "+
+        "Nuvvu judgement lekunda complete story cheppu.";
+
+    }
+
+    else if(
+      x.includes("job") ||
+      x.includes("career") ||
+      x.includes("exam")
+    ){
+
+      reply=
+        "Career pressure really exhausting avvachu. ❤️ "+
+        "First pressure ekkada nunchi vastundo cheppu.";
+
+    }
+
+
+    body.innerHTML+=
+      `<div class="message ai">
+        ${reply}
+      </div>`;
+
+
+    body.scrollTop=
+      body.scrollHeight;
+
+  },700);
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(s){
+
+  return s
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   LISTENER REGISTRATION
+========================================================= */
+
+async function openListenerRegistration(){
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+
+  if(!session){
+
+    alert(
+      "Listener application submit cheyyadaniki first Login / Sign Up cheyyali. ❤️"
+    );
+
+    openAuthModal("login");
+
+    return;
+  }
+
+
+  document
+    .getElementById("listenerModal")
+    .style
+    .display="flex";
+
+
+  await checkExistingListenerApplication();
+}
+
+
+function closeListenerRegistration(){
+
+  document
+    .getElementById("listenerModal")
+    .style
+    .display="none";
+}
+
+
+async function checkExistingListenerApplication(){
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+
+  if(!session)
+    return;
+
+
+  const {
+    data,
+    error
+  }=
+    await supabaseClient
+      .from("listener_applications")
+      .select("*")
+      .eq(
+        "user_id",
+        session.user.id
+      )
+      .order(
+        "created_at",
+        {ascending:false}
+      )
+      .limit(1);
+
+
+  if(error){
+
+    console.error(
+      "Listener application check error:",
+      error
+    );
+
+    return;
+  }
+
+
+  if(data?.length){
+
+    const a=data[0];
+
+
+    if(a.status==="pending"){
+
+      showListenerStatus(
+        "pending",
+        "⏳ Your listener application is currently under review."
+      );
+
+      disableListenerForm();
+
+    }
+
+    else if(a.status==="approved"){
+
+      showListenerStatus(
+        "approved",
+        "🎉 Your listener application has been approved!"
+      );
+
+      disableListenerForm();
+
+    }
+
+    else if(a.status==="rejected"){
+
+      showListenerStatus(
+        "rejected",
+        "❌ Your previous application was rejected. You may submit a new application."
+      );
+
+      enableListenerForm();
+
+    }
+
+  }else{
+
+    enableListenerForm();
+
+    document
+      .getElementById(
+        "listenerStatus"
+      )
+      .style
+      .display="none";
+  }
+}
+
+
+async function submitListenerApplication(e){
+
+  e.preventDefault();
+
+
+  const {
+    data:{session}
+  }=
+    await supabaseClient.auth
+      .getSession();
+
+
+  if(!session){
+
+    alert(
+      "Please login/signup first."
+    );
+
+    return;
+  }
+
+
+  const btn=
+    document.getElementById(
+      "listenerSubmitBtn"
+    );
+
+
+  const age=
+    parseInt(
+      document
+        .getElementById("listenerAge")
+        .value
+    );
+
+
+  if(age<18){
+
+    alert(
+      "Listener avvadaniki minimum age 18 years."
+    );
+
+    return;
+  }
+
+
+  if(
+    !document
+      .getElementById("listenerConsent")
+      .checked
+  ){
+
+    alert(
+      "Please accept the listener agreement."
+    );
+
+    return;
+  }
+
+
+  btn.disabled=true;
+  btn.textContent="Submitting...";
+
+
+  try{
+
+    const {
+      data:pd,
+      error:pe
+    }=
+      await supabaseClient
+        .from("listener_applications")
+        .select("id,status")
+        .eq(
+          "user_id",
+          session.user.id
+        )
+        .eq(
+          "status",
+          "pending"
+        );
+
+
+    if(pe)
+      throw pe;
+
+
+    if(pd?.length){
+
+      showListenerStatus(
+        "pending",
+        "⏳ You already have a listener application under review."
+      );
+
+      disableListenerForm();
+
+      return;
+    }
+
+
+    const {error}=
+      await supabaseClient
+        .from("listener_applications")
+        .insert({
+
+          user_id:
+            session.user.id,
+
+          name:
+            document
+              .getElementById(
+                "listenerName"
+              )
+              .value
+              .trim(),
+
+          age,
+
+          languages:
+            document
+              .getElementById(
+                "listenerLanguages"
+              )
+              .value
+              .trim(),
+
+          availability:
+            document
+              .getElementById(
+                "listenerAvailability"
+              )
+              .value,
+
+          experience:
+            document
+              .getElementById(
+                "listenerExperience"
+              )
+              .value
+              .trim() ||
+            null,
+
+          reason:
+            document
+              .getElementById(
+                "listenerReason"
+              )
+              .value
+              .trim(),
+
+          status:"pending"
+
+        });
+
+
+    if(error)
+      throw error;
+
+
+    showListenerStatus(
+      "pending",
+      "✅ Application submitted successfully! Waiting for approval."
+    );
+
+
+    disableListenerForm();
+
+
+  }catch(err){
+
+    console.error(err);
+
+
+    alert(
+      "Application submit avvaledu.\n\n"+
+      (
+        err.message ||
+        "Please check Supabase table/RLS settings."
+      )
+    );
+
+
+    btn.disabled=false;
+    btn.textContent=
+      "Submit Listener Application";
+  }
+}
+
+
+function showListenerStatus(
+  type,
+  message
+){
+
+  const s=
+    document.getElementById(
+      "listenerStatus"
+    );
+
+  s.style.display="block";
+
+  s.className=
+    "listener-status status-"+type;
+
+  s.textContent=message;
+}
+
+
+function disableListenerForm(){
+
+  document
+    .querySelectorAll(
+      "#listenerForm input,#listenerForm select,#listenerForm textarea,#listenerForm button"
+    )
+    .forEach(
+      e=>e.disabled=true
+    );
+}
+
+
+function enableListenerForm(){
+
+  document
+    .querySelectorAll(
+      "#listenerForm input,#listenerForm select,#listenerForm textarea,#listenerForm button"
+    )
+    .forEach(
+      e=>e.disabled=false
+    );
+
+  document
+    .getElementById(
+      "listenerSubmitBtn"
+    )
+    .textContent=
+      "Submit Listener Application";
+}
+
+
+/* =========================================================
+   MODAL CLICK / ESCAPE
+========================================================= */
+
+window.addEventListener(
+  "click",
+  e=>{
+
+    if(
+      e.target===
+      document.getElementById("chatModal")
+    )
+      closeChat();
+
+
+    if(
+      e.target===
+      document.getElementById("authModal")
+    )
+      closeAuthModal();
+
+
+    if(
+      e.target===
+      document.getElementById("listenerModal")
+    )
+      closeListenerRegistration();
+
+
+    if(
+      e.target===
+      document.getElementById("paymentModal")
+    )
+      closePaymentModal();
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="Escape"){
+
+      closeChat();
+      closeAuthModal();
+      closeListenerRegistration();
+      closePaymentModal();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
